@@ -29,6 +29,6 @@ if __name__=='__main__':
         try:
             bot.polling(non_stop=True, interval=0)
         except Exception as e:
-            print(e)
+            print("EEEEE" + e)
             time.sleep(5)
             continue
