@@ -1,0 +1,8 @@
+# Ignore sensitive information
+*.env
+__pycache__/
+user_info_reg.json
+test*
+staff_list.json
+stuff_records.json
+user_session.json
