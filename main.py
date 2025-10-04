@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 from user_info import check_reg, add_user_to_reg
 from stuff_list import add_name_to_stuff_list, get_stuff_list, switch_stuff_name, get_all_passe_stuff_names, delete_stuff_name, get_today_records
 from googleTable import add_records_to_googletable
+from add_record import add_record, pre_adding_rec, get_record_from_session
 
-from add_record import add_record
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
@@ -103,6 +103,14 @@ def callback_handler(call):
         print (delete_info)
         bot.send_message(call.message.chat.id, f'Имя {current_stuff_name} удалено из бота')
         return 0
+    if call.data == "add_record_from_session":
+        record = get_record_from_session()
+        add_record_info = add_record(record)
+        if add_record_info["adding_record_error"]:
+            bot.send_message(call.message.chat.id, f'Не удалось добавить запись {" ".join(record)} для {add_record_info["name"]}')
+        else:
+            bot.send_message(call.message.chat.id, f'Добавлена новая запись:\n{add_record_info["name"]} --- {add_record_info["record"]["hours"]} ч --- проект {add_record_info["record"]["project"]}')
+        return 0
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
@@ -124,11 +132,13 @@ def get_text_messages(message):
             bot.send_message(message.chat.id, f'Имя {name} добавленно в бот')        
         return 0
     if record[0].isdigit():
-        add_record_info = add_record(record)
-        if add_record_info["adding_record_error"]:
-            bot.send_message(message.chat.id, f'Не удалось добавить запись {" ".join(record)} для {add_record_info["name"]}')
-        else:
-            bot.send_message(message.chat.id, f'Добавлена новая запись:\n{add_record_info["name"]} --- {add_record_info["record"]["hours"]} ч --- проект {add_record_info["record"]["project"]}')
+        pre_adding_info = pre_adding_rec(record)
+        if not pre_adding_info["adding_record_error"]:
+            adding_caption = f'{pre_adding_info["name"]} --- {pre_adding_info["record"]["hours"]}ч --- проект {pre_adding_info["record"]["project"]} --- {pre_adding_info["record"]["comment"]}'
+            button1 = types.InlineKeyboardButton(text=adding_caption, callback_data="add_record_from_session")
+            keyboard = types.InlineKeyboardMarkup()
+            keyboard.add(button1)
+            bot.send_message(message.chat.id, "Внести следующую запись:", reply_markup=keyboard)
         return 0
     all_passe_stuff_names = get_all_passe_stuff_names(message.text)
     if len(all_passe_stuff_names) > 0:
