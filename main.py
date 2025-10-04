@@ -34,7 +34,7 @@ def help_message(message):
         msg.append(f'Порядок внесения данных в базу:\n  1. Выберете имя текущего наемника (через меню или введя имя)\n')
         msg.append(f'  2. Внесите данные в формате <часы проект комментарий> (через пробел, напрмер: 8 13133 уборка склада, можно без комментария)\n\n')
         msg.append(f'Для добавления в бот нового наемника введите имя, начиная с + (например, +Баймамбет киргиз). Имя нужно вводить как можно подробнее\n\n')
-        msg.append(f'Команды меню:\n\\switch_stuff_name --- переключить имя текущего наемника\n\\delete_name --- удаление имени из бота\n')
+        msg.append(f'Команды меню:\n\\switch_name --- переключить имя текущего наемника\n\\delete_name --- удаление имени из бота\n')
         msg.append(f'\\today_records --- посмотреть все записи за сегодня\n')
         msg.append(f'\\add_records_to_googletable --- внести записи в гугл таблицу\n')
         bot.send_message(message.chat.id, "".join(msg))
@@ -54,7 +54,7 @@ def today_records(message):
         bot.send_message(message.chat.id, f"Записей за сегодня не найдено")
     bot.send_message(message.chat.id, f'Записи, ожидающие добавления в базу: {t_rec["need_download_rec_count"]}')
 
-@bot.message_handler(commands=['switch_stuff_name'])
+@bot.message_handler(commands=['switch_name'])
 def set_current_name(message):
     stuff_list = get_stuff_list()
     markup = types.InlineKeyboardMarkup()
