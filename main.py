@@ -29,6 +29,9 @@ def help_message(message):
     # start_message(message)
     if not check_reg(message.from_user.id):
         bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
+    if not check_reg(message.from_user.id):
+        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
     else:  
         msg = []  
         msg.append(f'Порядок внесения данных в базу:\n  1. Выберете имя текущего наемника (через меню или введя имя)\n')
@@ -41,6 +44,9 @@ def help_message(message):
 
 @bot.message_handler(commands=['today_records'])
 def today_records(message):
+    if not check_reg(message.from_user.id):
+        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
     t_rec = get_today_records()
     msg = []
     r_count = 0
@@ -56,6 +62,9 @@ def today_records(message):
 
 @bot.message_handler(commands=['switch_name'])
 def set_current_name(message):
+    if not check_reg(message.from_user.id):
+        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
     stuff_list = get_stuff_list()
     markup = types.InlineKeyboardMarkup()
     button_data = []
@@ -71,6 +80,9 @@ def set_current_name(message):
 
 @bot.message_handler(commands=['delete_name'])
 def delete_stuff_name_from_bot(message):
+    if not check_reg(message.from_user.id):
+        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
     stuff_list = get_stuff_list()
     markup = types.InlineKeyboardMarkup()
     button_data = []
@@ -86,6 +98,9 @@ def delete_stuff_name_from_bot(message):
 
 @bot.message_handler(commands=['add_records_to_googletable'])
 def add_to_googletable(message):
+    if not check_reg(message.from_user.id):
+        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
     global gc, base_id
     add_rec_to_gt_info = add_records_to_googletable(message, gc, base_id)
     if not add_rec_to_gt_info["error"]:
@@ -94,6 +109,9 @@ def add_to_googletable(message):
         bot.send_message(message.chat.id, f'Не удалось записать данные. Ошибка: {add_rec_to_gt_info["error_msg"]}')
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
+    if not check_reg(call.message.from_user.id):
+        bot.send_message(call.message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
     if "switch_stuff_name" in call.data:
         current_stuff_name = call.data.replace("switch_stuff_name", "")
         switch_info = switch_stuff_name(current_stuff_name)
@@ -116,7 +134,6 @@ def callback_handler(call):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    record = message.text.split(" ")
     if message.text == '5378':
         reg_ans = add_user_to_reg(message.from_user.id)        
         if reg_ans['success']:
@@ -124,7 +141,12 @@ def get_text_messages(message):
             bot.send_message(message.from_user.id, "Перед внесением данных выберете текущего наемника")
         else:
             bot.send_message(message.from_user.id, "Не удалось зарегистрироваться")
-        return 0
+        return 0    
+    if not check_reg(message.from_user.id):
+        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+        return 0    
+    record = message.text.split(" ")
+
     if message.text[0] == "+":
         add_info = add_name_to_stuff_list(message.text[1:])
         name = add_info["name"]
