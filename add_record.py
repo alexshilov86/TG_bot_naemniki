@@ -5,7 +5,7 @@ def add_record(record):
     with open("user_session.json", 'r', encoding='utf-8') as file:
         user_session = json.load(file)  
     name = user_session["current_stuff_name"]
-    today = datetime.date.today().strftime("%Y-%m-%d")
+    today = datetime.date.today().strftime("%d.%m.%y")
     try:
         hours = int(record[0])
         project = record[1]
@@ -16,8 +16,10 @@ def add_record(record):
         add_error = True
         new_record ={}
     if not add_error:
-        new_record_string = ",\n" + json.dumps(new_record, ensure_ascii=False)
-        with open("stuff_records.json", 'a', encoding='utf-8') as file:
-            file.write (new_record_string)
+        with open("stuff_records.json", 'r', encoding='utf-8') as file:
+            stuff_records = json.load(file)
+        stuff_records.append(new_record)
+        with open("stuff_records.json", 'w', encoding='utf-8') as file:
+            json.dump(stuff_records, file, indent=4, ensure_ascii=False)
     return {"adding_record_error": add_error, "record": new_record, "name": name}
 

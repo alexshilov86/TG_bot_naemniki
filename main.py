@@ -1,15 +1,21 @@
 import telebot
 import gspread
-import os, time
+import os, json
 from telebot import types
 from dotenv import load_dotenv
 from user_info import check_reg, add_user_to_reg
 from stuff_list import add_name_to_stuff_list, get_stuff_list, switch_stuff_name, get_all_passe_stuff_names, delete_stuff_name, get_today_records
+from googleTable import add_records_to_googletable
 
 from add_record import add_record
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
+# открытие базы данных и базы регистрации
+service_account_info_json = os.getenv('GSPREAD_SERVICE_ACCOUNT_JSON')
+base_id =os.getenv('BASE_GOOGLE_TABLE_ID')
+service_account_info = json.loads(service_account_info_json)
+gc = gspread.service_account_from_dict(service_account_info)
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -42,9 +48,9 @@ def today_records(message):
     msg = "\n".join(msg)
     if r_count > 0:
         bot.send_message(message.chat.id, f"Записи за сегодня:\n{msg}")
-        bot.send_message(message.chat.id, f'Записи, ожидающие добавления в базу: {t_rec["need_download_rec_count"]}')
     else:
         bot.send_message(message.chat.id, f"Записей за сегодня не найдено")
+    bot.send_message(message.chat.id, f'Записи, ожидающие добавления в базу: {t_rec["need_download_rec_count"]}')
 
 @bot.message_handler(commands=['switch_stuff_name'])
 def set_current_name(message):
@@ -56,7 +62,10 @@ def set_current_name(message):
     for item in button_data:
         button = types.InlineKeyboardButton(text=item["text"], callback_data=item["callback_data"])
         markup.add(button)
-    bot.send_message(message.chat.id, f'Выберете текущее имя наемника:', reply_markup=markup)
+    if len(stuff_list) == 0:
+        bot.send_message(message.chat.id, f'В боте пока нет наемников. Для добавления введите имя, начиная с +')
+    else:
+        bot.send_message(message.chat.id, f'Выберете текущее имя наемника:', reply_markup=markup)
 
 @bot.message_handler(commands=['delete_name'])
 def delete_stuff_name_from_bot(message):
@@ -68,8 +77,19 @@ def delete_stuff_name_from_bot(message):
     for item in button_data:
         button = types.InlineKeyboardButton(text=item["text"], callback_data=item["callback_data"])
         markup.add(button)
-    bot.send_message(message.chat.id, f'Выберете имя для удаления:', reply_markup=markup)
+    if len(stuff_list) == 0:
+        bot.send_message(message.chat.id, f'В боте пока нет наемников. Для добавления введите имя, начиная с +')
+    else:
+        bot.send_message(message.chat.id, f'Выберете имя для удаления:', reply_markup=markup)
 
+@bot.message_handler(commands=['add_records_to_googletable'])
+def add_to_googletable(message):
+    global gc, base_id
+    add_rec_to_gt_info = add_records_to_googletable(message, gc, base_id)
+    if not add_rec_to_gt_info["error"]:
+        bot.send_message(message.chat.id, f'Добавленно {add_rec_to_gt_info["count"]} записей')
+    else:
+        bot.send_message(message.chat.id, f'Не удалось записать данные. Ошибка: {add_rec_to_gt_info["error_msg"]}')
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
     if "switch_stuff_name" in call.data:

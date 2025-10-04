@@ -1,5 +1,18 @@
-{"name": "Имя наемника", "hours": "Часы работы", "project": "Проект", "comment": "Комментарий", "is_added_to_gt": "Добавлен в базу", "date": "Дата добавления"},
-{"name": "Николай", "hours": 8, "project": "13151", "comment": "выгрузка фур и прочее", "is_added_to_gt": false, "date": "2025-10-04"},
-{"name": "Сергей", "hours": 8, "project": "13142", "comment": "", "is_added_to_gt": false, "date": "2025-10-04"},
-{"name": "Сергей Иванов", "hours": 5, "project": "13133", "comment": "сборка", "is_added_to_gt": false, "date": "2025-10-04"},
-{"name": "Сергей Иванов", "hours": 5, "project": "13147", "comment": "", "is_added_to_gt": false, "date": "2025-10-04"}
+[
+    {
+        "name": "Иван Павлов",
+        "hours": 6,
+        "project": "13512",
+        "comment": "сборка",
+        "is_added_to_gt": true,
+        "date": "04.10.25"
+    },
+    {
+        "name": "Равшан Таджик",
+        "hours": 5,
+        "project": "13123",
+        "comment": "фасовка",
+        "is_added_to_gt": true,
+        "date": "04.10.25"
+    }
+]

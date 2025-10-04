@@ -61,17 +61,14 @@ def delete_stuff_name(name):
 
 def get_today_records():
     t_rec = {"need_download_rec_count": 0, "names_hours": {}}
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    with open("stuff_records.json", 'r', encoding='utf-8') as file_object:
-        
-        stuff_records_str = file_object.read()
-        
-        stuff_records = json.loads("[" + stuff_records_str + "]")
-    for rec in stuff_records[1:]:
+    today = datetime.date.today().strftime("%d.%m.%y")
+    with open("stuff_records.json", 'r', encoding='utf-8') as file:
+        stuff_records = json.load(file)
+    for rec in stuff_records:
+        t_rec["need_download_rec_count"] = t_rec["need_download_rec_count"] + 1 - rec["is_added_to_gt"]
         if rec["date"] == today:
             if not rec["name"] in t_rec["names_hours"]:
                 t_rec["names_hours"][rec["name"]] = rec["hours"]
             else:
                 t_rec["names_hours"][rec["name"]] = t_rec["names_hours"][rec["name"]] + rec["hours"]
-            t_rec["need_download_rec_count"] = t_rec["need_download_rec_count"] + 1 - rec["is_added_to_gt"]
     return t_rec
