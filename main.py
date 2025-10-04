@@ -1,6 +1,6 @@
 import telebot
 import gspread
-import os, json
+import os, json, time
 from telebot import types
 from dotenv import load_dotenv
 from user_info import check_reg, add_user_to_reg
@@ -143,12 +143,12 @@ def get_text_messages(message):
 
 
 # запуск бота
-bot.polling(non_stop=True, interval=0)
-# if __name__=='__main__':
-#     while True:
-#         try:
-#             bot.polling(non_stop=True, interval=0)
-#         except Exception as e:
-#             print("EEEEE" + e)
-#             time.sleep(5)
-#             continue
+# bot.polling(non_stop=True, interval=0)
+if __name__=='__main__':
+    while True:
+        try:
+            bot.polling(non_stop=True, interval=0)
+        except Exception as e:
+            print(e)
+            time.sleep(5)
+            continue
