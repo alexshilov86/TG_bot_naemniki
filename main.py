@@ -109,8 +109,8 @@ def add_to_googletable(message):
         bot.send_message(message.chat.id, f'Не удалось записать данные. Ошибка: {add_rec_to_gt_info["error_msg"]}')
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
-    if not check_reg(call.message.from_user.id):
-        bot.send_message(call.message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+    if not check_reg(call.message.chat.id):
+        bot.send_message(call.message.chat.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
         return 0    
     if "switch_stuff_name" in call.data:
         current_stuff_name = call.data.replace("switch_stuff_name", "")
@@ -135,15 +135,15 @@ def callback_handler(call):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     if message.text == '5378':
-        reg_ans = add_user_to_reg(message.from_user.id)        
+        reg_ans = add_user_to_reg(message.chat.id)        
         if reg_ans['success']:
-            bot.send_message(message.from_user.id, "Регистрация прошла успешно")
-            bot.send_message(message.from_user.id, "Перед внесением данных выберете текущего наемника")
+            bot.send_message(message.chat.id, "Регистрация прошла успешно")
+            bot.send_message(message.chat.id, "Перед внесением данных выберете текущего наемника")
         else:
-            bot.send_message(message.from_user.id, "Не удалось зарегистрироваться")
+            bot.send_message(message.chat.id, "Не удалось зарегистрироваться")
         return 0    
-    if not check_reg(message.from_user.id):
-        bot.send_message(message.from_user.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
+    if not check_reg(message.chat.id):
+        bot.send_message(message.chat.id, "Вы не зарегистрированы. Для регистрации введите секретный код")
         return 0    
     record = message.text.split(" ")
 
